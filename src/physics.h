@@ -24,21 +24,23 @@ enum options {
   OPTION_E, // Etc—come up with your own ideas, and get agreement from instructor.
 };
 
-#define PHYSICS_VERSION                          1
-#define PHYSICS_DEF_GRAVITY                      9
-#define PHYSICS_DEF_MASS_OF_VEHICLE              5
-#define PHYSICS_DEF_GRAPHING_LIMITS_XMIN         10
-#define PHYSICS_DEF_GRAPHING_LIMITS_XMAX         10
-#define PHYSICS_DEF_OPTION                       OPTION_A
-#define PHYSICS_DEF_INIT_FUEL_MASS               5
-#define PHYSICS_DEF_MAX_THRUST                   5
-#define PHYSICS_DEF_MAX_LANDING_SPEED_VERTICAL   2
-#define PHYSICS_DEF_MAX_LANDING_SPEED_HORIZONTAL 2
-#define PHYSICS_DEF_BLACKOUT_ACCELERATION        5
-#define PHYSICS_DEF_BLACKOUT_DURATION            3
-#define PHYSICS_DEF_INIT_VELOCITY_XVEL           1
-#define PHYSICS_DEF_INIT_VELOCITY_YVEL           1
-#define PHYSICS_DEF_INIT_HORIZONTAL_POSITION     5
+#define PHYSICS_VERSION                       2
+#define PHYSICS_GRAVITY                       9
+#define PHYSICS_MASS_OF_VEHICLE               5
+#define PHYSICS_GRAPHING_LIMITS_XMIN          10
+#define PHYSICS_GRAPHING_LIMITS_XMAX          10
+#define PHYSICS_OPTION                        OPTION_A
+#define PHYSICS_INIT_FUEL_MASS                5
+#define PHYSICS_CONVERSION_EFFICIENCY         4000
+#define PHYSICS_MAX_THRUST                    5
+#define PHYSICS_MAX_LANDING_SPEED_VERTICAL    2
+#define PHYSICS_MAX_LANDING_SPEED_HORIZONTAL  2
+#define PHYSICS_BLACKOUT_ACCELERATION         5
+#define PHYSICS_BLACKOUT_DURATION             3
+#define PHYSICS_INIT_VELOCITY_XVEL            1
+#define PHYSICS_INIT_VELOCITY_YVEL            1
+#define PHYSICS_INIT_HORIZONTAL_POSITION      5
+#define PHYSICS_ANGLE_OF_ATTACK_CHANGE_QUANTA 1
 
 typedef struct graph_lim_s {
   int xmin; // (cm)
@@ -76,8 +78,7 @@ typedef struct physics_s {
   uint32_t option;
   uint32_t max_thrust;  // (N)
   uint32_t init_fuel_mass;  // (kg)
-  uint32_t conversion_efficiency;  // (%)
-  uint32_t fuel_energy_density;  // kJ/g
+  uint32_t conversion_efficiency;  // (N/kg)
   max_landing_speed_t max_landing_speed;
   blackout_t blackout;
   velocity_t init_velocity;
@@ -94,15 +95,15 @@ enum vehicle_state {
 // TODO: Create Systick Handler with private variable for msTicks and use to calculate start and end times
 // TODO: Init some of these values in beginning of physics task before while loop
 typedef struct flight_state_s {
-  velocity_t velocity;
+  velocity_t velocity; // (m/s)
+  uint32_t acceleration; // (m/s^2)
+  uint32_t thrust; // (N)
   uint32_t mass; // (kg)
   uint32_t horizontal_position; // (mm)
   uint32_t vertical_position; // (mm)
   uint32_t vehicle_state;
-  uint32_t start_time; // (ms)
-  uint32_t end_time; // (ms)
-  uint32_t blackout_start_time; // (ms)
-  uint32_t blackout_end_time; // (ms)
+  uint64_t time; // (ms)
+  uint64_t blackout_time; // (ms)
 } flight_state_t;
 
 void physics_init(void);
